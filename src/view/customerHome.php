@@ -6,21 +6,27 @@
  * Time: 9:17 PM
  */
 session_start();
-//if(!isset($_SESSION['user']))
-//{
-//    header("Location: index.php");
-//    exit;
-//}
+if(!isset($_SESSION['user']))
+{
+    header("Location: index.php");
+    exit;
+}
+require_once '../controller/SqliteRepository.php';
+require_once '../model/Customer.php';
+require_once '../model/Employee.php';
 
+$repo = new \pnaika\finals\SqliteRepository();
+$customerId = isset($_GET['id']) ? $_GET['id'] : '';
+$customer = $repo->getCustomerById($customerId);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SHOW ALL</title>
+    <title>CUSTOMER HOME</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <link rel="stylesheet" href="styles/css.css">
+    <link rel="stylesheet" href="../style/style.css">
     <link href='http://fonts.googleapis.com/css?family=Lora:400,700' rel='stylesheet' type='text/css'/>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css"/>
@@ -28,6 +34,32 @@ session_start();
 </head>
 <body>
 <div id="wrapper">
+
+    <div class="page-header">
+       <?php print '<header>Hello  '.$customer->getCustomerName().'</header>' ?>
+    </div>
+    <div>
+        <h5>Please select from the below options available!</h5
+    </div>
+
+    <table class="table table-striped">
+        <tbody>
+        <?php
+        print '<tr>
+            <td>Want to Reserve the site for your vehicle </td>
+             <td><a href="createPayment.php?id='.$customer->getId() .'">CLICK HERE!</a></td>
+        </tr>';
+        print '<tr>
+            <td>Want to See your Reservation? </td><td> <a href="showPayment.php?id='. $customer->getId().'">CLICK HERE!</a></td>
+        </tr>';
+        print '<tr>
+            <td> Do you want to Update your profile ? </td><td> <a href="customerProfile.php?id='.$customer->getId().'">CLICK HERE!</a></td>
+        </tr>'
+        ?>
+        </tbody>
+    </table>
+
+
     <a href="index.php?logout=yes" class="btn btn-primary">logout</a>
     <footer>
         <nav class="navbar navbar-default navbar-fixed-bottom">

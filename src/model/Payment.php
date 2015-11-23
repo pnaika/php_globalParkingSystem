@@ -15,6 +15,7 @@ class Payment
     private $paymentAmount = '';
     private $paymentDate = '';
     private $hours = '';
+    private $customerId = '';
 
     /**
      * @return string
@@ -62,6 +63,22 @@ class Payment
     public function setPaymentDate($paymentDate)
     {
         $this->paymentDate = $paymentDate;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCustomerId()
+    {
+        return $this->customerId;
+    }
+
+    /**
+     * @param string $customerId
+     */
+    public function setCustomerId($customerId)
+    {
+        $this->customerId = $customerId;
     }
 
     /**

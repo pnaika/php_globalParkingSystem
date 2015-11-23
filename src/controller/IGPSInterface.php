@@ -12,4 +12,7 @@ namespace pnaika\finals;
 interface IGPSInterface
 {
     public function getCustomerDetails($username , $password);
+    public function getEmployeeDetails($username , $password);
+    public function getCustomerById($custId);
+    public function savePayments($payment);
 }

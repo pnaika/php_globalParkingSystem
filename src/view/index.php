@@ -5,27 +5,47 @@
  * Date: 11/21/2015
  * Time: 8:05 PM
  */
+
+session_start();
+
 require_once '../controller/SqliteRepository.php';
 require_once '../model/Customer.php';
 require_once '../model/Employee.php';
-session_start();
+
+$u = new \pnaika\finals\SqliteRepository();
 
 if (isset($_GET['logout'])) {
     session_destroy();
 }
-if (isset($_SESSION['user'])) {
-    header("Location: showAll.php");
-    exit;
-}
+//if (isset($_SESSION['user'])) {
+//    header("Location: showAll.php");
+//    exit;
+//}
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = isset($_POST['userName']) ? trim($_POST['userName']) : '';
     $password = isset($_POST['password']) ? trim($_POST['password']) : '';
+    $userType = isset($_POST['userType']) ? trim($_POST['userType']) : '';
 
-    $res = $u->getCustomerDetails($username, $password);
-    if ($username == $res->getCustomerName() && $password == $res->getPassword()) {
-        $_SESSION['user'] = $usernames;
-        header('Location: showAll.php');
+    if($userType == 'customer'){
+        $res = $u->getCustomerDetails($username, $password);
+        $id = $res->getId();
+        if ($username == $res->getCustomerName() && $password == $res->getPassword()) {
+            $_SESSION['user'] = $username;
+
+            header("Location: customerHome.php?id=$id");
+        } else {
+            print_r('Invalid LogIn , Please check the details again!');
+        }
+    } else if($userType == 'employee') {
+        $res = $u->getEmployeeDetails($username, $password);
+        if ($username == $res->getEmployeeName() && $password == $res->getPassword()) {
+            $_SESSION['user'] = $username;
+
+            header("Location: employeeHome.php");
+        } else {
+            print_r('Invalid LogIn , Please check the details again!');
+        }
     }
 }
 ?>
@@ -58,10 +78,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <label for="j_password" class="col-sm-2 control-label">Password</label>
             <input class="form-control" placeholder="Password" id="j_password" type="password" name="password"/>
         </div>
+        <div class="form-group">
+            <select class="form-control" name="userType" required>
+                <option value="customer">Customer</option>
+                <option value="employee">Employee</option>
+            </select>
+        </div>
         <button type="submit" class="btn btn-primary btn-sm btn-block">LOG IN</button>
         <button type="reset" class="btn btn-primary btn-sm btn-block">RESET</button>
         <form>
-<!--            <a href="index.php?logout=yes" class="btn btn-primary">logout</a>-->
+
+
+
+
+
             <footer>
                 <nav class="navbar navbar-default navbar-fixed-bottom">
                     <div class="container">
