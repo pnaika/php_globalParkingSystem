@@ -19,17 +19,15 @@ require_once '../model/Payment.php';
 
 $repo = new \pnaika\finals\SqliteRepository();
 $time = date("d M Y - h:i:s A");
-$customerId = isset($_GET['id']) ? $_GET['id'] : '';
-$employeeId = isset($_GET['empId']) ? $_GET['empId'] : '';
-if($customerId != '') {
-    $customer = $repo->getCustomerById($customerId);
-    $payments = $repo->getPaymentByCustId($customerId);
-} elseif ($employeeId != ''){
+if(isset($_GET['empId'])) {
+    $employeeId = $_GET['empId'];
+    $role = 'EMPLOYEE';
     $employee = $repo->getEmployeeById($employeeId);
-    $payments = $repo->getAllPayments();
+} else if(isset($_GET['adminId'])){
+    $adminId = $_GET['adminId'];
+    $role = 'ADMIN';
 }
-
-
+$allEmployees = $repo->getAllEmployees();
 ?>
 
 <!DOCTYPE html>
@@ -48,57 +46,58 @@ if($customerId != '') {
 <a href="#"><img class="logo" src="../images/logo/gpsLogo.jpg" alt="CCS" title="GLOBAL PARKING SYSTEM"></a>
 <div id="wrapper">
     <?php
-    if($customerId != ""){
+    if($role === "ADMIN"){
         print '<div id="header-container">
         <ul class="secondary-nav">
-            <li><a href="customerHome.php?id='.$customer->getId().'">BACK</a></li>
+            <li><a href="adminHome.php?adminId='.$adminId.'">BACK</a></li>
             <li><a href="index.php?logout=yes">LOGOUT</a></li>
         </ul>
         </div>';
-    } elseif ($employeeId != "") {
+        print '<h4>HELLO ADMIN , THESE ARE THE EMPLOYEE LIST IN OUR COMPANY</h4>';
+    } elseif ($role = "EMPLOYEE") {
         print '<div id="header-container">
         <ul class="secondary-nav">
             <li><a href="employeeHome.php?empId='.$employee->getEmpId().'">BACK</a></li>
             <li><a href="index.php?logout=yes">LOGOUT</a></li>
         </ul>
         </div>';
+        print '<h4>HELLO  '. $employee->getEmployeeName().' , THESE ARE THE EMPLOYEE LIST IN OUR COMPANY</h4>';
     }
     ?>
     <?php
-    if($customerId != ""){
-        print '<h1>LIST OF RESERVATION FROM '. $customer->getCustomerName().'</h1>';
-    } elseif ($employeeId != "") {
-        print '<h1>LIST OF RESERVATION FROM '. $employee->getEmployeeName().'</h1>';
-    }
+
     ?>
     <hr>
-    <h3>CLICK ON PAYMENT ID FOR MORE DETAILS</h3>
     <table class="table table-striped">
         <tr>
-            <th>DATE OF TRANSACTION</th>
-            <th>PAYMENT ID</th>
-            <th>AMOUNT</th>
+            <th>EMPLOYEE NAME</th>
+            <th>EMAIL</th>
+            <th>ADDRESS</th>
+            <th>PHONE</th>
+            <th>LAST UPDATE</th>
+            <?php if($role === "ADMIN"){
+                print '<th>ACTION</th>';
+            }?>
         </tr>
         <?php
-        foreach($payments as $payment) {
+        foreach($allEmployees as $emp) {
             print '<tr>';
-            print '<td>' . $payment->getPaymentDate() . '</td>';
-            if($customerId != ''){
-                print '<td><a href="showDetailPayment.php?custId=' . $payment->getCustomerId() . '&payId='.$payment->getPaymentId().'&ROLE=Cust">'. $payment->getPaymentId() .'</a></td>';
-            }else if ($employeeId != ''){
-                print '<td><a href="showDetailPayment.php?custId=' . $payment->getCustomerId() .'&empId=' . $employee->getEmpId() . '&payId='.$payment->getPaymentId().'&ROLE=Emp">'. $payment->getPaymentId() .'</a></td>';
+            print '<td>' . $emp->getEmployeeName() . '</td>';
+            print '<td>' . $emp->getEmpEmail() . '</td>';
+            print '<td>' . $emp->getEmpAddress() . '</td>';
+            print '<td>' . $emp->getEmpPhoneNumber() . '</td>';
+            print '<td>' . $emp->getEmpLastUpdate()  . '</td>';
+            if($role === "ADMIN"){
+                print '<td><form action="confirmationEmpDelete.php" method="POST">
+                            <input type="hidden" name="adminId" value="'.$adminId.'">
+                            <input type="hidden" name="empId" value="'.$emp->getEmpId().'">
+                            <button type="submit" class="btn btn-primary">DELETE</button>
+                        </form></td>';
             }
-            print '<td>' . $payment->getPaymentAmount()  . '</td>';
             print '</tr>';
         }
         ?>
     </table>
-
-        <?php
-        if ($employeeId != '') {
-            print '<a href="getAllPayment.php?empId=' . $employee->getEmpId() . '">MORE DETAILS</a>';
-        }
-        ?>
     <hr>
     <footer>
         <nav class="navbar navbar-default navbar-fixed-bottom">

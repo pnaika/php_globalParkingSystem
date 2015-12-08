@@ -5,13 +5,13 @@
  * Date: 11/21/2015
  * Time: 9:17 PM
  */
-session_start();
-if(!isset($_SESSION['user']))
-{
-    header("Location: index.php");
-    exit;
-}
+require_once '../controller/SqliteRepository.php';
+require_once '../model/Customer.php';
+require_once '../model/Employee.php';
 
+$repo = new \pnaika\finals\SqliteRepository();
+$employeeId = isset($_GET['empId']) ? $_GET['empId'] : '';
+$employee = $repo->getEmployeeById($employeeId);
 ?>
 
 <!DOCTYPE html>
@@ -27,17 +27,56 @@ if(!isset($_SESSION['user']))
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"/>
 </head>
 <body>
+<a href="#"><img class="logo" src="../images/logo/gpsLogo.jpg" alt="CCS" title="GLOBAL PARKING SYSTEM"></a>
 <div id="wrapper">
 
-    <div class="page-header">
-        <header>Hello <?php $_SESSION['user'] ?></header>
+    <div id="header-container">
+        <ul class="secondary-nav">
+            <li><a href="index.php?logout=yes">LOGOUT</a></li>
+        </ul>
     </div>
 
+    <div class="page-header">
+        <?php print '<h1>HELLO  '.strtoupper($employee->getEmployeeName()).'</h1>' ?>
+    </div>
+    <div>
+        <h5>PLEASE SELECT FROM THE BELOW OPTION!</h5
+    </div>
+
+    <table class="table table-striped">
+        <tbody>
+        <?php
+        print '<tr>
+            <td>ALL EMPLOYEE RECORDS </td>
+             <td><a href="showAllEmployee.php?empId='.$employee->getEmpId() .'">CLICK HERE!</a></td>
+        </tr>';
+        print '<tr>
+            <td>CUSTOMER DETAILS </td>
+            <td> <a href="showAllCustomer.php?empId='.$employee->getEmpId().'">CLICK HERE!</a></td>
+        </tr>';
+        print '<tr>
+            <td>PAYMENT INFORMATION </td>
+            <td> <a href="showPayment.php?empId='.$employee->getEmpId().'">CLICK HERE!</a></td>
+        </tr>';
+        ?>
+        </tbody>
+    </table>
 
 
-
-
-    <a href="index.php?logout=yes" class="btn btn-primary">logout</a>
+    <table class="table">
+        <?php
+        print
+            '<tr>
+            <td> DO YOU WANT TO UPDATE YOUR PROFILE ? </td>
+            <td>
+            <form method="post" action="employeeProfile.php?empId='.$employee->getEmpId().'">
+                <input type="hidden" name="empId" value="'.$employee->getEmpId().'">
+                <button type="submit" class="btn btn-primary">CLICK HERE!</button>
+            </form>
+            </td>
+        </tr>';
+        ?>
+    </table>
     <footer>
         <nav class="navbar navbar-default navbar-fixed-bottom">
             <div class="container">

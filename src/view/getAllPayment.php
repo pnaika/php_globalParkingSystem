@@ -13,21 +13,19 @@ if(!isset($_SESSION['user']))
     exit;
 }
 require_once '../controller/SqliteRepository.php';
-require_once '../model/Customer.php';
+
 require_once '../model/Employee.php';
 require_once '../model/Payment.php';
 
 $repo = new \pnaika\finals\SqliteRepository();
 $time = date("d M Y - h:i:s A");
-$customerId = isset($_GET['id']) ? $_GET['id'] : '';
+
 $employeeId = isset($_GET['empId']) ? $_GET['empId'] : '';
-if($customerId != '') {
-    $customer = $repo->getCustomerById($customerId);
-    $payments = $repo->getPaymentByCustId($customerId);
-} elseif ($employeeId != ''){
+$paymentId = isset($_GET['payId']) ? $_GET['payId'] : '';
+
     $employee = $repo->getEmployeeById($employeeId);
     $payments = $repo->getAllPayments();
-}
+
 
 
 ?>
@@ -36,7 +34,7 @@ if($customerId != '') {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SHOW ALL PAYMENT</title>
+    <title>SHOW ALL</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <link rel="stylesheet" href="../style/style.css">
     <link href='http://fonts.googleapis.com/css?family=Lora:400,700' rel='stylesheet' type='text/css'/>
@@ -47,58 +45,54 @@ if($customerId != '') {
 <body>
 <a href="#"><img class="logo" src="../images/logo/gpsLogo.jpg" alt="CCS" title="GLOBAL PARKING SYSTEM"></a>
 <div id="wrapper">
-    <?php
-    if($customerId != ""){
-        print '<div id="header-container">
-        <ul class="secondary-nav">
-            <li><a href="customerHome.php?id='.$customer->getId().'">BACK</a></li>
-            <li><a href="index.php?logout=yes">LOGOUT</a></li>
-        </ul>
-        </div>';
-    } elseif ($employeeId != "") {
-        print '<div id="header-container">
-        <ul class="secondary-nav">
-            <li><a href="employeeHome.php?empId='.$employee->getEmpId().'">BACK</a></li>
-            <li><a href="index.php?logout=yes">LOGOUT</a></li>
-        </ul>
-        </div>';
-    }
-    ?>
-    <?php
-    if($customerId != ""){
-        print '<h1>LIST OF RESERVATION FROM '. $customer->getCustomerName().'</h1>';
-    } elseif ($employeeId != "") {
-        print '<h1>LIST OF RESERVATION FROM '. $employee->getEmployeeName().'</h1>';
-    }
-    ?>
-    <hr>
-    <h3>CLICK ON PAYMENT ID FOR MORE DETAILS</h3>
-    <table class="table table-striped">
-        <tr>
-            <th>DATE OF TRANSACTION</th>
-            <th>PAYMENT ID</th>
-            <th>AMOUNT</th>
-        </tr>
-        <?php
-        foreach($payments as $payment) {
-            print '<tr>';
-            print '<td>' . $payment->getPaymentDate() . '</td>';
-            if($customerId != ''){
-                print '<td><a href="showDetailPayment.php?custId=' . $payment->getCustomerId() . '&payId='.$payment->getPaymentId().'&ROLE=Cust">'. $payment->getPaymentId() .'</a></td>';
-            }else if ($employeeId != ''){
-                print '<td><a href="showDetailPayment.php?custId=' . $payment->getCustomerId() .'&empId=' . $employee->getEmpId() . '&payId='.$payment->getPaymentId().'&ROLE=Emp">'. $payment->getPaymentId() .'</a></td>';
-            }
-            print '<td>' . $payment->getPaymentAmount()  . '</td>';
-            print '</tr>';
-        }
-        ?>
-    </table>
 
-        <?php
-        if ($employeeId != '') {
-            print '<a href="getAllPayment.php?empId=' . $employee->getEmpId() . '">MORE DETAILS</a>';
-        }
-        ?>
+    <?php
+        print '<div id="header-container">
+        <ul class="secondary-nav">
+            <li><a href="showPayment.php?empId='.$employee->getEmpId().'">BACK</a></li>
+            <li><a href="employeeHome.php?empId='.$employee->getEmpId().'">HOME</a></li>
+            <li><a href="index.php?logout=yes">LOGOUT</a></li>
+        </ul>'
+    ?>
+
+    <hr>
+
+        <table class="table table-hover">
+            <tr>
+                <th>DATE OF TRANSACTION</th>
+                <th>PAYMENT ID</th>
+                <th>AMOUNT</th>
+                <th>CUSTOMER NAME</th>
+                <th>CUSTOMER PHONE</th>
+                <th>CUSTOMER EMAIL</th>
+                <th>CUSTOMER ADDRESS</th>
+                <th>LAST UPDATED</th>
+                <th>ACTION</th>
+            </tr>
+            <?php
+            foreach($payments as $payment) {
+                $customer = $repo->getCustomerById($payment->getCustomerId());
+                print '<tr>';
+                print '<td>' . $payment->getPaymentDate() . '</td>';
+                print '<td>' . $payment->getPaymentId() . '</td>';
+                print '<td>' . $payment->getPaymentAmount()  . '</td>';
+                print '<td>' . $customer->getCustomerName()  . '</td>';
+                print '<td>' . $customer->getPhoneNumber()  . '</td>';
+                print '<td>' . $customer->getEmail()  . '</td>';
+                print '<td>' . $customer->getAddress()  . '</td>';
+                print '<td>' . $customer->getLastUpdate()  . '</td>';
+                print '<td><form action="confirmation.php" method="POST">
+                            <input type="hidden" name="payId" value="'.$payment->getPaymentId().'">
+                            <input type="hidden" name="empId" value="'.$employee->getEmpId().'">
+                            <button type="submit" class="btn btn-primary">DELETE</button>
+                        </form></td>';
+//                print '<td><a href="deletePayment.php?&empId=' . $employee->getEmpId() . '&payId='.$payment->getPaymentId().'&ROLE=Emp"> DELETE </a></td>';
+                print '</tr>';
+            }
+            ?>
+        </table>
+
+
     <hr>
     <footer>
         <nav class="navbar navbar-default navbar-fixed-bottom">

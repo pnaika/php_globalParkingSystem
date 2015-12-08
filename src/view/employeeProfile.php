@@ -8,7 +8,7 @@ if(!isset($_SESSION['user']))
 }
 
 require_once '../controller/SqliteRepository.php';
-require_once '../model/Customer.php';
+require_once '../model/Employee.php';
 $repo = new \pnaika\finals\SqliteRepository();
 
 function input($data) {
@@ -18,14 +18,14 @@ function input($data) {
     return $data;
 }
 ?>
-<?php if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['id'])): ?>
+<?php if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['empId'])): ?>
     <?php
-    $customer = $repo->getCustomerById(($_POST['id'])); ?>
+    $employee = $repo->getEmployeeById(($_POST['empId'])); ?>
     <!doctype html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>CUSTOMER PROFILE</title>
+        <title>EMPLOYEE PROFILE</title>
         <link rel="stylesheet" href="../style/style.css">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <link href='http://fonts.googleapis.com/css?family=Lora:400,700' rel='stylesheet' type='text/css'/>
@@ -36,33 +36,31 @@ function input($data) {
     <body>
     <a href="#"><img class="logo" src="../images/logo/gpsLogo.jpg" alt="CCS" title="GLOBAL PARKING SYSTEM"></a>
     <div id="wrapper">
-
         <div id="header-container">
         <ul class="secondary-nav">
-            <li><a href="http://google.com" target="_blank">Google</a></li>
+            <li><?php print '<a href="employeeHome.php?empId='.$employee->getEmpId().'">HOME</a>'?></li>
             <li><a href="index.php?logout=yes">LOGOUT</a></li>
-            <li><?php print '<a href="customerHome.php?id='.$customer->getId().'">HOME</a>'?></li>
         </ul>
         </div>
-        <h1>EDIT CUSTOMER DETAILS</h1>
-        <form action="customerProfile.php" method="POST" id="loginForm">
-            <input type="hidden" name="custId" value="<?php print $_POST['id']; ?>">
+        <h1>EDIT EMPLOYEE DETAILS</h1>
+        <form action="employeeProfile.php" method="POST" id="loginForm">
+            <input type="hidden" name="employeeId" value="<?php print $_POST['empId']; ?>">
             <div class="form-group">
-                <label for="cName">FULL NAME/USER NAME</label>
-                <input type="text" name="cName" class="form-control" id="cName" placeholder="FULL NAME" value="<?php print $customer->getCustomerName(); ?>" required>
+                <label for="cName">EMPLOYEE'S FULL NAME/USER NAME</label>
+                <input type="text" name="cName" class="form-control" id="cName" placeholder="FULL NAME" value="<?php print $employee->getEmployeeName(); ?>" required>
                 <br>
             </div>
             <div class="form-group">
                 <label for="email">EMAIL</label>
-                <input type="email" name="email" class="form-control" id="email" placeholder="EMail"value="<?php print $customer->getEmail(); ?>">
+                <input type="email" name="email" class="form-control" id="email" placeholder="EMail"value="<?php print $employee->getEmpEmail(); ?>">
             </div>
             <div class="form-group">
                 <label for="phone">PHONE NUMBER</label>
-                <input type="number" name="phone" class="form-control" id="phone" placeholder="PHONE NUMBER" min="1000000000" max="9999999999" value="<?php print $customer->getPhoneNumber(); ?>">
+                <input type="number" name="phone" class="form-control" id="phone" min="1000000000" max="9999999999" placeholder="PHONE NUMBER" value="<?php print $employee->getEmpPhoneNumber(); ?>">
             </div>
             <div class="form-group">
                 <label for="address">ADDRESS</label>
-                <input type="text" name="address" class="form-control" id="address" placeholder="ADDRESS" value="<?php print $customer->getAddress(); ?>">
+                <input type="text" name="address" class="form-control" id="address" placeholder="ADDRESS" value="<?php print $employee->getEmpAddress(); ?>">
             </div>
             <div class="form-group">
                 <label for="password">IF YOU WISH TO HAVE NEW PASSWORD?</label>
@@ -87,20 +85,20 @@ function input($data) {
     </div>
     </body>
     </html>
-<?php elseif ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['custId'])): ?>
+<?php elseif ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['employeeId'])): ?>
     <?php
-    $customerName = isset($_POST['cName']) ? input($_POST['cName']) : '';
+    $employeeName = isset($_POST['cName']) ? input($_POST['cName']) : '';
     $email = isset($_POST['email']) ? input($_POST['email']) : '';
     $phoneNumber = isset($_POST['phone']) ? input($_POST['phone']) : '';
     $address = isset($_POST['address']) ? input($_POST['address']) : '';;
     $password = isset($_POST['password']) ? input($_POST['password']) : '';;
     $formIsValid = true;
-    $customerNameErr = '';
+    $employeeNameErr = '';
     $passwordErr = '';
     $time = date("d M Y - h:i:s A");
-    if (empty($customerName)){
+    if (empty($employeeName)){
         $formIsValid = false;
-        $customerNameErr = '<span style="color: #f00;">NAME IS A REQUIRED FIELD!</span>';
+        $employeeNameErr = '<span style="color: #f00;">NAME IS A REQUIRED FIELD!</span>';
     }
     if (empty($password)){
         $formIsValid = false;
@@ -109,21 +107,21 @@ function input($data) {
     ?>
     <?php if ($formIsValid): ?>
          <?php
-            $customer = $repo->getCustomerById($_POST['custId']);
-            $customer->setCustomerName($customerName);
+            $employee = $repo->getEmployeeById($_POST['employeeId']);
+            $employee->setEmployeeName($employeeName);
             $hashPassword = password_hash($password, PASSWORD_DEFAULT);
-            $customer->setPassword($hashPassword);
-            $customer->setAddress($address);
-            $customer->setEmail($email);
-            $customer->setPhoneNumber($phoneNumber);
-            $customer->setLastUpdate($time);
-            $repo->saveCustomer($customer);
+            $employee->setPassword($hashPassword);
+            $employee->setEmpAddress($address);
+            $employee->setEmpEmail($email);
+            $employee->setEmpPhoneNumber($phoneNumber);
+            $employee->setEmpLastUpdate($time);
+            $repo->saveEmployee($employee);
         ?>
         <!doctype html>
         <html lang="en">
         <head>
             <meta charset="UTF-8">
-            <title>UPDATE CUSTOMER PROFILE</title>
+            <title>UPDATE EMPLOYEE PROFILE</title>
             <link rel="stylesheet" href="../style/style.css">
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
             <link href='http://fonts.googleapis.com/css?family=Lora:400,700' rel='stylesheet' type='text/css'/>
@@ -134,15 +132,13 @@ function input($data) {
         <body>
         <a href="#"><img class="logo" src="../images/logo/gpsLogo.jpg" alt="CCS" title="GLOBAL PARKING SYSTEM"></a>
         <div id="wrapper">
-
         <div id="header-container">
         <ul class="secondary-nav">
-            <li><a href="http://google.com" target="_blank">Google</a></li>
+            <li><?php print '<a href="employeeHome.php?empId='.$employee->getEmpId().'">HOME</a>'?></li>
             <li><a href="index.php?logout=yes">LOGOUT</a></li>
-            <li><?php print '<a href="customerHome.php?id='.$customer->getId().'">HOME</a>'?></li>
         </ul>
         </div>
-            <div class="alert alert-success" role="alert">CUSTOMER DETAILS GOT UPDATED!</div>
+            <div class="alert alert-success" role="alert">EMPLOYEE DETAILS GOT UPDATED!</div>
             <h3>PLEASE USE YOUR NEW USERNAME AND PASSWORD TO LOGIN NEXT TIME :) </h3>
             <footer>
                 <nav class="navbar navbar-default navbar-fixed-bottom">
@@ -162,12 +158,12 @@ function input($data) {
         </html>
     <?php else: ?>
         <?php
-        $customer = $repo->getCustomerById(($_POST['custId'])); ?>
+        $employee = $repo->getEmployeeById(($_POST['employeeId'])); ?>
         <!doctype html>
         <html lang="en">
         <head>
             <meta charset="UTF-8">
-            <title>UPDATE CUSTOMER PROFILE</title>
+            <title>UPDATE EMPLOYEE PROFILE</title>
              <link rel="stylesheet" href="../style/style.css">
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
             <link href='http://fonts.googleapis.com/css?family=Lora:400,700' rel='stylesheet' type='text/css'/>
@@ -180,30 +176,29 @@ function input($data) {
         <div id="wrapper">
         <div id="header-container">
         <ul class="secondary-nav">
-            <li><a href="http://google.com" target="_blank">Google</a></li>
+            <li><?php print '<a href="employeeHome.php?empId='.$employee->getEmpId().'">HOME</a>'?></li>
             <li><a href="index.php?logout=yes">LOGOUT</a></li>
-            <li><?php print '<a href="customerHome.php?id='.$customer->getId().'">HOME</a>'?></li>
         </ul>
         </div>
-        <h1>EDIT CUSTOMER PROFILE</h1>
-        <form action="customerProfile.php" method="POST" id="loginForm">
-             <input type="hidden" name="custId" value="<?php print $_POST['custId']; ?>">
+        <h1>EDIT EMPLOYEE PROFILE</h1>
+        <form action="employeeProfile.php" method="POST" id="loginForm">
+             <input type="hidden" name="employeeId" value="<?php print $_POST['employeeId']; ?>">
              <div class="form-group">
-                 <label for="cName">FULL NAME/USER NAME</label>
-                 <input type="text" name="cName" class="form-control" id="cName" placeholder="FULL NAME" value="<?php print $customer->getCustomerName(); ?>" required>
-                 <?php print $customerNameErr; ?>
+                 <label for="cName">EMPLOYEE'S FULL NAME/USER NAME</label>
+                 <input type="text" name="cName" class="form-control" id="cName" placeholder="FULL NAME" value="<?php print $employee->getEmployeeName(); ?>" required>
+                 <?php print $employeeNameErr; ?>
              </div>
              <div class="form-group">
                  <label for="email">EMAIL</label>
-                 <input type="email" name="email" class="form-control" id="email" placeholder="EMail"value="<?php print $customer->getEmail(); ?>">
+                 <input type="email" name="email" class="form-control" id="email" placeholder="EMail"value="<?php print $employee->getEmpEmail(); ?>">
              </div>
              <div class="form-group">
                  <label for="phone">PHONE NUMBER</label>
-                 <input type="number" name="phone" class="form-control" id="phone" placeholder="PHONE NUMBER" min="1000000000" max="9999999999" value="<?php print $customer->getPhoneNumber(); ?>">
+                 <input type="number" name="phone" class="form-control" id="phone" min="1000000000" max="9999999999" placeholder="PHONE NUMBER" value="<?php print $employee->getEmpPhoneNumber(); ?>">
              </div>
              <div class="form-group">
                  <label for="address">ADDRESS</label>
-                 <input type="text" name="address" class="form-control" id="address" placeholder="ADDRESS" value="<?php print $customer->getAddress(); ?>">
+                 <input type="text" name="address" class="form-control" id="address" placeholder="ADDRESS" value="<?php print $employee->getEmpAddress(); ?>">
              </div>
              <div class="form-group">
                  <label for="password">IF YOU WISH TO HAVE NEW PASSWORD?</label>
@@ -234,7 +229,7 @@ function input($data) {
     <!doctype html>
     <html lang="en">
     <head>
-        <title>EDIT CUSTOMER PROFILE</title>
+        <title>EDIT EMPLOYEE PROFILE</title>
         <link rel="stylesheet" href="../style/style.css">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <link href='http://fonts.googleapis.com/css?family=Lora:400,700' rel='stylesheet' type='text/css'/>
@@ -245,15 +240,16 @@ function input($data) {
     <body>
     <a href="#"><img class="logo" src="../images/logo/gpsLogo.jpg" alt="CCS" title="GLOBAL PARKING SYSTEM"></a>
     <div id="wrapper">
-   <?php $customer = $repo->getCustomerById(($_POST['id'])); ?>
+    <?php
+        $employee = $repo->getEmployeeById(($_POST['empId'])); ?>
     <div id="header-container">
         <ul class="secondary-nav">
             <li><a href="http://google.com" target="_blank">Google</a></li>
             <li><a href="index.php?logout=yes">LOGOUT</a></li>
-            <li><?php print '<a href="customerHome.php?id='.$customer->getId().'">HOME</a>'?></li>
+            <li><?php print '<a href="employeeHome.php?empId='.$employee->getEmpId().'">HOME</a>'?></li>
         </ul>
         </div>
-          <h1>NO CUSTOMER IS SELECTED TO EDIT</h1>
+          <h1>NO EMPLOYEE IS SELECTED TO EDIT</h1>
 
           <footer>
                 <nav class="navbar navbar-default navbar-fixed-bottom">
