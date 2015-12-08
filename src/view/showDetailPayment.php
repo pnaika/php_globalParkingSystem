@@ -19,14 +19,18 @@ require_once '../model/Payment.php';
 
 $repo = new \pnaika\finals\SqliteRepository();
 $time = date("d M Y - h:i:s A");
-$customerId = isset($_GET['id']) ? $_GET['id'] : '';
+$customerId = isset($_GET['custId']) ? $_GET['custId'] : '';
 $employeeId = isset($_GET['empId']) ? $_GET['empId'] : '';
-if($customerId != '') {
+$paymentId = isset($_GET['payId']) ? $_GET['payId'] : '';
+
+
+if(($_GET['ROLE']) === 'Cust') {
     $customer = $repo->getCustomerById($customerId);
-    $payments = $repo->getPaymentByCustId($customerId);
-} elseif ($employeeId != ''){
+    $paymentDetails =  $repo->getPaymentById($paymentId);
+} elseif (($_GET['ROLE']) === 'Emp'){
     $employee = $repo->getEmployeeById($employeeId);
-    $payments = $repo->getAllPayments();
+    $paymentDetails =  $repo->getPaymentById($paymentId);
+    $customer = $repo->getCustomerById($paymentDetails->getCustomerId());
 }
 
 
@@ -36,7 +40,7 @@ if($customerId != '') {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SHOW ALL PAYMENT</title>
+    <title>SHOW ALL</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <link rel="stylesheet" href="../style/style.css">
     <link href='http://fonts.googleapis.com/css?family=Lora:400,700' rel='stylesheet' type='text/css'/>
@@ -47,58 +51,65 @@ if($customerId != '') {
 <body>
 <a href="#"><img class="logo" src="../images/logo/gpsLogo.jpg" alt="CCS" title="GLOBAL PARKING SYSTEM"></a>
 <div id="wrapper">
+
     <?php
-    if($customerId != ""){
+    if(($_GET['ROLE']) === 'Cust'){
         print '<div id="header-container">
         <ul class="secondary-nav">
-            <li><a href="customerHome.php?id='.$customer->getId().'">BACK</a></li>
+            <li><a href="showPayment.php?id='.$customer->getId().'">BACK</a></li>
+            <li><a href="customerHome.php?id='.$customer->getId().'">HOME</a></li>
             <li><a href="index.php?logout=yes">LOGOUT</a></li>
         </ul>
         </div>';
-    } elseif ($employeeId != "") {
+    } elseif(($_GET['ROLE']) === 'Emp') {
         print '<div id="header-container">
         <ul class="secondary-nav">
-            <li><a href="employeeHome.php?empId='.$employee->getEmpId().'">BACK</a></li>
+            <li><a href="showPayment.php?empId='.$employee->getEmpId().'">BACK</a></li>
+            <li><a href="employeeHome.php?empId='.$employee->getEmpId().'">HOME</a></li>
             <li><a href="index.php?logout=yes">LOGOUT</a></li>
         </ul>
         </div>';
-    }
-    ?>
-    <?php
-    if($customerId != ""){
-        print '<h1>LIST OF RESERVATION FROM '. $customer->getCustomerName().'</h1>';
-    } elseif ($employeeId != "") {
-        print '<h1>LIST OF RESERVATION FROM '. $employee->getEmployeeName().'</h1>';
     }
     ?>
     <hr>
-    <h3>CLICK ON PAYMENT ID FOR MORE DETAILS</h3>
+    <h1>PAYMENT DETAILS</h1>
+    <h3>PLEASE FIND THE DETAILS BELOW.</h3>
     <table class="table table-striped">
-        <tr>
-            <th>DATE OF TRANSACTION</th>
-            <th>PAYMENT ID</th>
-            <th>AMOUNT</th>
-        </tr>
+        <tbody>
         <?php
-        foreach($payments as $payment) {
-            print '<tr>';
-            print '<td>' . $payment->getPaymentDate() . '</td>';
-            if($customerId != ''){
-                print '<td><a href="showDetailPayment.php?custId=' . $payment->getCustomerId() . '&payId='.$payment->getPaymentId().'&ROLE=Cust">'. $payment->getPaymentId() .'</a></td>';
-            }else if ($employeeId != ''){
-                print '<td><a href="showDetailPayment.php?custId=' . $payment->getCustomerId() .'&empId=' . $employee->getEmpId() . '&payId='.$payment->getPaymentId().'&ROLE=Emp">'. $payment->getPaymentId() .'</a></td>';
-            }
-            print '<td>' . $payment->getPaymentAmount()  . '</td>';
-            print '</tr>';
-        }
+        print '<tr>
+            <td>CUSTOMER NAME  </td>
+             <td>'. $customer->getCustomerName().'</td>
+        </tr>';
+        print '<tr>
+            <td>CONTACT NUM.</td>
+            <td> '. $customer->getPhoneNumber().'</td>
+        </tr>';
+        print '<tr>
+            <td> ADDRESS </td>
+            <td> '.$customer->getAddress().'</td>
+        </tr>';
+        print '<tr>
+            <td>EMAIL  </td>
+             <td>'. $customer->getEmail().'</td>
+        </tr>';
+        print '<tr>
+            <td>AMOUNT $</td>
+            <td> '. $paymentDetails->getPaymentAmount() .'</td>
+        </tr>';
+        print '<tr>
+            <td> PARKING HOURS</td>
+            <td>  '. $paymentDetails->getHours() .'</td>
+        </tr>';
+        print '<tr>
+            <td> PAYMENT DATE</td>
+            <td>  '. $paymentDetails->getPaymentDate() .'</td>
+        </tr>'
         ?>
+        </tbody>
     </table>
 
-        <?php
-        if ($employeeId != '') {
-            print '<a href="getAllPayment.php?empId=' . $employee->getEmpId() . '">MORE DETAILS</a>';
-        }
-        ?>
+
     <hr>
     <footer>
         <nav class="navbar navbar-default navbar-fixed-bottom">

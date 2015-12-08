@@ -1,6 +1,6 @@
 body{
     width: auto;
-    height: auto;
+    height: 100%;
     opacity: 2;
     position: absolute;
     margin: auto;
@@ -13,8 +13,9 @@ body::after {
     content: "";
     width: auto;
     height: auto;
+    background: url(../images/logo/backgroudImage.jpg);
     background-size: cover;
-    opacity: 0.5;
+    opacity: 0.2;
     top: 0;
     left: 0;
     bottom: 0;
@@ -23,21 +24,28 @@ body::after {
     z-index: -1;
 }
 #wrapper{
-    width: 90%;
+    width: 95%;
+    height: 100%;
     margin-left: auto;
     margin-right: auto;
 }
 @media (min-width: 1000px){
     #wrapper{
-        width: 960px;
+        padding-top: 5%;
+        width: 85%;
         margin-left: auto;
         margin-right: auto;
     }
 }
-.page-header {
+header {
+    margin-top: 10%;
+    text-align: center;
+    font-weight: bolder;
     font-size: xx-large;
-    margin-left: auto;
-    margin-right: auto;
+    padding-right: 7%;
+    padding-left: 7%;
+    font-style: italic;
+    color: orangered;
 }
 
 #loginForm {
@@ -46,3 +54,120 @@ body::after {
     margin-left: auto;
     margin-right: auto;
 }
+h1 {
+    font-family: Papyrus, fantasy;
+    font-size: 27px;
+    font-style: oblique;
+    font-variant: small-caps;
+    font-weight: bold;
+}
+h3 {
+    font-family: 'Book Antiqua', Palatino, 'Palatino Linotype', 'Palatino LT STD', Georgia, serif;
+    font-style: oblique;
+    font-weight: 100;
+}
+
+ul.secondary-nav {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    color: black;
+    font-size: small;
+}
+@media (min-width: 700px) {
+    ul.secondary-nav {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        color: black;
+    }
+}
+ul.secondary-nav li:before {
+    content: "|";
+}
+
+ul.secondary-nav li:first-child:before {
+    content: "";
+}
+
+ul.secondary-nav li {
+    float: left;
+}
+
+ul.secondary-nav li a {
+    color: black;
+    margin: 0 10px;
+}
+ul.secondary-nav li a:hover{
+    color: blue;
+}
+img.logo {
+    margin-left: 15px;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    height: 8%;
+    z-index: 2;
+    position: fixed;
+    opacity: 0.8;
+}
+
+nav #nav-div{
+    width: 960px;
+    margin: 0 auto;
+    float: left;
+    width: 960px;
+    height: 30px;
+    margin: 30px 0px 30px 0px;
+}
+nav#main-nav ul{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+nav#main-nav ul a{
+    text-decoration: none;
+    font-size: 15px;
+    font-style: italic;
+    font-weight: 600;
+    font-family: 'Cantarell', sans-serif;
+    color: black;
+    padding: 12px 15px 10px 10px;
+    display: block;
+    margin: 3px;
+}
+nav#main-nav ul li{
+    float: left;
+}
+nav#main-nav ul li a:hover{
+    color: navy;
+    background-color: rgb(160,82,45);
+    opacity: 0.7;
+}
+
+.aboutUs{
+    text-align: center;
+    font-weight: bolder;
+    font-size: x-large;
+    padding-right: 7%;
+    padding-left: 7%;
+    font-style: italic;
+    font-family: Papyrus;
+}
+
+footer{
+    clear:both;
+    width: 930px;
+    height: 100px;
+    padding: 0 15px 0 15px;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+
